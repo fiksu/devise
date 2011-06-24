@@ -67,5 +67,16 @@ class RememberMeTest < ActionController::IntegrationTest
     get destroy_user_session_path
     get users_path
     assert_not warden.authenticated?(:user)
+    assert_equal cookies['remember_user_token'], ''
+  end
+
+  test 'cookies are destroyed on unverified requests' do
+    swap HomeController, :allow_forgery_protection => true do
+      user = create_user_and_remember
+      get users_path
+      assert warden.authenticated?(:user)
+      post root_path, :authenticity_token => 'INVALID'
+      assert_not warden.authenticated?(:user)
+    end
   end
 end
