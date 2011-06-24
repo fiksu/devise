@@ -80,7 +80,8 @@ module Devise
       # Example:
       #   before_filter :require_no_authentication, :only => :new
       def require_no_authentication
-        redirect_to after_sign_in_path_for(resource_name) if warden.authenticated?(resource_name)
+        # PATCH: https://github.com/plataformatec/devise/issues/1036
+        redirect_to after_sign_in_path_for(resource_name) if warden.authenticated?(resource_name) || warden.authenticate?
       end
 
       # Sets the flash message with :key, using I18n. By default you are able
